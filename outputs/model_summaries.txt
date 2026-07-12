@@ -1,6 +1,8 @@
 ST5014CEM - Norfolk & Suffolk Property Investment Analysis
-Linear model summaries - generated 2026-07-12 15:23 
+Linear model summaries - generated 2026-07-12 23:10 
 ============================================================================== 
+
+town_data: 37 towns
 
 
 Call:
