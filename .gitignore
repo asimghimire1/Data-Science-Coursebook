@@ -1,0 +1,13 @@
+# Raw data - never commit (hundreds of MB). Kept on disk, just not tracked.
+DATA Science Files/
+data/
+
+# Regenerable intermediates - rebuild by running "R File/Cleaning.R"
+cleaned/
+outputs/*.sqlite
+
+# R session files
+.Rhistory
+.RData
+.Rproj.user/
+Rplots.pdf

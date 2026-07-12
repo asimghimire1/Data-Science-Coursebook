@@ -1,0 +1,118 @@
+ST5014CEM - Norfolk & Suffolk Property Investment Analysis
+Linear model summaries - generated 2026-07-12 15:23 
+============================================================================== 
+
+
+Call:
+lm(formula = average_house_price ~ avg_download_speed, data = town_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-120673  -54390  -22882   27741  262844 
+
+Coefficients:
+                   Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          419516      72741   5.767 1.56e-06 ***
+avg_download_speed    -1765       2234  -0.790    0.435    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 85900 on 35 degrees of freedom
+Multiple R-squared:  0.01752,	Adjusted R-squared:  -0.01055 
+F-statistic: 0.6241 on 1 and 35 DF,  p-value: 0.4349
+
+
+Call:
+lm(formula = average_house_price ~ drugs_rate_per_10000, data = town_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-114184  -48684  -20940   41722  258234 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          446746.8    36750.9  12.156 4.06e-14 ***
+drugs_rate_per_10000  -2124.1      871.7  -2.437     0.02 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 80140 on 35 degrees of freedom
+Multiple R-squared:  0.145,	Adjusted R-squared:  0.1206 
+F-statistic: 5.938 on 1 and 35 DF,  p-value: 0.02004
+
+
+Call:
+lm(formula = average_house_price ~ average_att8scr, data = town_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-133892  -49667  -22192   37936  251390 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)       304529      69835   4.361 0.000109 ***
+average_att8scr     1439       1679   0.857 0.397271    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 85770 on 35 degrees of freedom
+Multiple R-squared:  0.02055,	Adjusted R-squared:  -0.007431 
+F-statistic: 0.7345 on 1 and 35 DF,  p-value: 0.3973
+
+
+Call:
+lm(formula = average_att8scr ~ drugs_rate_per_10000, data = town_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-33.481  -4.642   1.424   4.791  13.374 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)          42.72316    3.94339   10.83    1e-12 ***
+drugs_rate_per_10000 -0.05055    0.09353   -0.54    0.592    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 8.599 on 35 degrees of freedom
+Multiple R-squared:  0.008275,	Adjusted R-squared:  -0.02006 
+F-statistic: 0.292 on 1 and 35 DF,  p-value: 0.5923
+
+
+Call:
+lm(formula = avg_download_speed ~ drugs_rate_per_10000, data = town_data)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-8.496 -3.018 -1.867  1.038 15.506 
+
+Coefficients:
+                     Estimate Std. Error t value Pr(>|t|)    
+(Intercept)           26.2843     2.7992   9.390 4.29e-11 ***
+drugs_rate_per_10000   0.1436     0.0664   2.163   0.0374 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.104 on 35 degrees of freedom
+Multiple R-squared:  0.1179,	Adjusted R-squared:  0.09275 
+F-statistic:  4.68 on 1 and 35 DF,  p-value: 0.03742
+
+
+Call:
+lm(formula = avg_download_speed ~ average_att8scr, data = town_data)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-9.154 -3.595 -2.233  0.606 17.118 
+
+Coefficients:
+                Estimate Std. Error t value Pr(>|t|)    
+(Intercept)     35.54559    5.25471   6.765 7.71e-08 ***
+average_att8scr -0.08857    0.12634  -0.701    0.488    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.454 on 35 degrees of freedom
+Multiple R-squared:  0.01385,	Adjusted R-squared:  -0.01433 
+F-statistic: 0.4915 on 1 and 35 DF,  p-value: 0.4879
+
