@@ -6,6 +6,11 @@ data/
 cleaned/
 outputs/*.sqlite
 
+# The written report is submitted separately, not published here.
+# Kept on disk, just not tracked.
+*.docx
+README.md
+
 # R session files
 .Rhistory
 .RData
