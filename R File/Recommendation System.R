@@ -1,10 +1,6 @@
 # ST5014CEM Data Science for Developers
 # Asim Ghimire (240330)
-#
-# Rates every town 0-10 on four characteristics, combines them into a weighted
-# overall score, and ranks the towns to recommend where to invest.
-#
-# Run after Linear Model.R.
+
 
 library(tidyverse)
 
@@ -12,7 +8,6 @@ library(tidyverse)
 setwd("C:/Users/asimg/Downloads/Data Science Codes Files")
 
 dir.create("Recommendation System", showWarnings = FALSE)
-
 
 # The same two brand colours used in Graphs.R and Linear Model.R.
 CORAL <- "#F97068"
@@ -22,7 +17,7 @@ TEAL  <- "#00BFC9"
 town_data <- read_csv("cleaned/town_data.csv", show_col_types = FALSE)
 
 
-# ---------------------------------------------------------------------------
+
 # Rating scale
 # ---------------------------------------------------------------------------
 
@@ -42,15 +37,12 @@ weights <- c(afford = 0.35,
              speed  = 0.25,
              school = 0.15)
 
-
-# ---------------------------------------------------------------------------
-# Rate and rank the towns
-# ---------------------------------------------------------------------------
-
 town_rating <- town_data %>%
-  mutate(`Affordability Rating`       = scale10(average_house_price, invert = TRUE),
+  mutate(`Affordability Rating`       = scale10(average_house_price, invert 
+                                                = TRUE),
          `Connectivity Rating`        = scale10(avg_download_speed),
-         `Safety and Security Rating` = scale10(crime_rate_per_1000,  invert = TRUE),
+         `Safety and Security Rating` = scale10(crime_rate_per_1000,  invert 
+                                                = TRUE),
          `School Academic Rating`     = scale10(average_att8scr),
 
          `Overall Rating` = weights["afford"] * `Affordability Rating` +
@@ -59,6 +51,10 @@ town_rating <- town_data %>%
                             weights["school"] * `School Academic Rating`) %>%
   select(Town, County, ends_with("Rating")) %>%
   arrange(desc(`Overall Rating`))
+
+head(town_rating, 10)
+cat("Top 3 towns:", head(town_rating$Town, 3))
+
 
 write.csv(town_rating,
           "Recommendation System/town_rating.csv",
@@ -76,9 +72,8 @@ print(top_10_towns)
 cat("\nTop 3 towns:", paste(head(town_rating$Town, 3), collapse = ", "), "\n")
 
 
-# ---------------------------------------------------------------------------
+
 # Rating comparison across the top 10 towns
-# ---------------------------------------------------------------------------
 
 # Drawn as small multiples - one panel per rating - rather than fifty dodged bars.
 # The panel title carries the identity of each rating, so colour is freed from that
@@ -108,7 +103,8 @@ plot <- ggplot(towns_long, aes(Rating, Town, fill = Role)) +
                      breaks = c(0, 5, 10),
                      expand = expansion(mult = c(0, 0.05))) +
   labs(title    = "Rating Comparison Across Top 10 Towns",
-       subtitle = "Towns ordered by overall rating. The overall score (teal) is the weighted combination of the four components (coral).",
+       subtitle = "Towns ordered by overall rating. The overall score (teal) 
+       is the weighted combination of the four components (coral).",
        x        = "Rating (0-10)",
        y        = NULL) +
   theme_minimal(base_size = 11) +

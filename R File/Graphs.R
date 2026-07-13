@@ -1,9 +1,5 @@
 # ST5014CEM Data Science for Developers
 # Asim Ghimire (240330)
-#
-# Exploratory visualisations. Saves 15 PNGs to graphs/.
-#
-# Run after Cleaning.R.
 
 library(tidyverse)
 library(lubridate)
@@ -16,20 +12,12 @@ setwd("C:/Users/asimg/Downloads/Data Science Codes Files")
 
 dir.create("graphs", showWarnings = FALSE)
 
-
-# ---------------------------------------------------------------------------
 # Colour palette
-# ---------------------------------------------------------------------------
 
-# Two brand colours carry every chart. Norfolk is always coral and Suffolk is
-# always teal, so a colour means the same thing in every figure of the report.
-# The pair is colourblind-safe (worst-case separation dE 35.2, well above the
-# threshold of 12 for protanopia, deuteranopia and tritanopia).
 CORAL <- "#F97068"
 TEAL  <- "#00BFC9"
 
-# Deeper siblings of the same two hues, used ONLY for outlines and points so that
-# filled shapes keep a crisp edge. They are never used as a fill colour.
+# Deeper siblings of the same two hues, used only for outlines and never as a fill.
 CORAL_DEEP <- "#C0453C"
 TEAL_DEEP  <- "#0094A6"
 
@@ -37,15 +25,18 @@ county_fill    <- c(Norfolk = CORAL,      Suffolk = TEAL)
 county_outline <- c(Norfolk = CORAL_DEEP, Suffolk = TEAL_DEEP)
 
 
-# ---------------------------------------------------------------------------
-# Load the cleaned datasets
-# ---------------------------------------------------------------------------
+# Loading the cleaned datasets
 
-cleaned_house_price_data <- read_csv("cleaned/cleaned_house_prices.csv", show_col_types = FALSE)
-broadband_data           <- read_csv("cleaned/broadband_cleaned_data.csv", show_col_types = FALSE)
-crime_data               <- read_csv("cleaned/crime_clean_data.csv", show_col_types = FALSE)
-population_data          <- read_csv("cleaned/cleaned_population_data.csv", show_col_types = FALSE)
-school_data              <- read_csv("cleaned/school_clean_data.csv", show_col_types = FALSE)
+cleaned_house_price_data <- read_csv("cleaned/cleaned_house_prices.csv", 
+                                     show_col_types = FALSE)
+broadband_data           <- read_csv("cleaned/broadband_cleaned_data.csv", 
+                                     show_col_types = FALSE)
+crime_data               <- read_csv("cleaned/crime_clean_data.csv", 
+                                     show_col_types = FALSE)
+population_data          <- read_csv("cleaned/cleaned_population_data.csv", 
+                                     show_col_types = FALSE)
+school_data              <- read_csv("cleaned/school_clean_data.csv", 
+                                     show_col_types = FALSE)
 
 
 # A town qualifies once it has at least 300 sales, and is assigned the county
@@ -66,9 +57,8 @@ price_town <- cleaned_house_price_data %>%
 angled_x <- theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 6))
 
 
-# ---------------------------------------------------------------------------
+
 # 1-2. Box plots of 2024 house prices by town  (log scale)
-# ---------------------------------------------------------------------------
 
 for (county in c("Norfolk", "Suffolk")) {
 
@@ -89,9 +79,9 @@ for (county in c("Norfolk", "Suffolk")) {
 }
 
 
-# ---------------------------------------------------------------------------
+
 # 3-4. Average 2024 house price by town  (bar chart)
-# ---------------------------------------------------------------------------
+
 
 for (county in c("Norfolk", "Suffolk")) {
 
@@ -112,9 +102,8 @@ for (county in c("Norfolk", "Suffolk")) {
 }
 
 
-# ---------------------------------------------------------------------------
+
 # 5. Monthly average house price by county
-# ---------------------------------------------------------------------------
 
 plot <- cleaned_house_price_data %>%
   mutate(Month_Start = floor_date(Date_of_Transfer, "month")) %>%
@@ -132,12 +121,12 @@ plot <- cleaned_house_price_data %>%
 ggsave("graphs/avg_price_line_chart.png", plot, width = 8.6, height = 4.4)
 
 
-# ---------------------------------------------------------------------------
 # 6-7. Average and maximum download speed by town
-# ---------------------------------------------------------------------------
+
 
 broadband_town <- broadband_data %>%
-  inner_join(cleaned_house_price_data %>% distinct(Postcode, Town), by = "Postcode") %>%
+  inner_join(cleaned_house_price_data %>% distinct(Postcode, Town), by = 
+               "Postcode") %>%
   inner_join(town_tab %>% select(Town, County), by = "Town")
 
 for (county in c("Norfolk", "Suffolk")) {
@@ -161,9 +150,8 @@ for (county in c("Norfolk", "Suffolk")) {
 }
 
 
-# ---------------------------------------------------------------------------
+
 # 8. Monthly drug crimes in 2024, by county
-# ---------------------------------------------------------------------------
 
 plot <- crime_data %>%
   filter(`Crime type` == "Drugs", str_starts(Month, "2024")) %>%
@@ -178,9 +166,7 @@ plot <- crime_data %>%
 ggsave("graphs/drug_boxplot_2024.png", plot, width = 7.6, height = 3.9)
 
 
-# ---------------------------------------------------------------------------
 # 9. Vehicle crime radar - the main town of each district, April 2024
-# ---------------------------------------------------------------------------
 
 # The main town of a district is the one with the most sales. Only Town is kept:
 # carrying the count column through would collide with the crime count below.
@@ -231,9 +217,8 @@ text(1.18 * cos(spoke_angles), 1.18 * sin(spoke_angles), vehicle_crime$Town, cex
 dev.off()
 
 
-# ---------------------------------------------------------------------------
 # 10. Robbery share by county, April 2024
-# ---------------------------------------------------------------------------
+
 
 robbery <- crime_data %>%
   filter(`Crime type` == "Robbery", Month == "2024-04") %>%
@@ -252,9 +237,8 @@ plot <- ggplot(robbery, aes("", n, fill = County)) +
 ggsave("graphs/robbery_pie_chart.png", plot, width = 6.4, height = 4.4)
 
 
-# ---------------------------------------------------------------------------
+
 # 11. Drug offence rate per 10,000 people, monthly trend
-# ---------------------------------------------------------------------------
 
 # Population is published per postcode sector, so it is rolled up to the county.
 sector_county <- cleaned_house_price_data %>%
@@ -284,9 +268,8 @@ plot <- crime_data %>%
 ggsave("graphs/drug_offence_rate_line_chart.png", plot, width = 8.6, height = 4.3)
 
 
-# ---------------------------------------------------------------------------
+
 # 12-15. Attainment 8 by town - box plot and line chart per county
-# ---------------------------------------------------------------------------
 
 latest_year <- max(school_data$Academic_Year)
 

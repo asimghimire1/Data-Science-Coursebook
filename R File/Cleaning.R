@@ -1,10 +1,6 @@
 # ST5014CEM Data Science for Developers
 # Asim Ghimire (240330)
-#
-# Cleans the five raw datasets and writes them to cleaned/,
-# then loads them into a 3NF SQLite database in outputs/.
-#
-# Run this script first, before Graphs.R, Linear Model.R and Recommendation System.R.
+
 
 library(tidyverse)
 library(lubridate)
@@ -17,16 +13,12 @@ setwd("C:/Users/asimg/Downloads/Data Science Codes Files")
 dir.create("cleaned", showWarnings = FALSE)
 dir.create("outputs", showWarnings = FALSE)
 
-
-# ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
-
 # "nr13ab" -> "NR1 3AB"
 std_pc <- function(x) {
   x <- toupper(gsub("\\s+", "", x))
   ifelse(nchar(x) >= 5,
-         paste0(substr(x, 1, nchar(x) - 3), " ", substr(x, nchar(x) - 2, nchar(x))),
+         paste0(substr(x, 1, nchar(x) - 3), " ", substr(x, nchar(x) - 2, 
+                                                        nchar(x))),
          x)
 }
 
@@ -37,8 +29,7 @@ pc_sector <- function(pc) {
 
 # Price Paid stores County and District in upper case, but the crime data derives
 # them in title case from the LSOA names. The two must agree or every join between
-# housing and crime returns zero rows. "and" is kept lower case so that
-# "King's Lynn and West Norfolk" matches the LSOA spelling exactly.
+# housing and crime returns zero rows.
 title_uk <- function(x) {
   x <- tolower(x)
   x <- gsub("(^|[ -])([a-z])", "\\1\\U\\2", x, perl = TRUE)
@@ -46,21 +37,23 @@ title_uk <- function(x) {
 }
 
 
-# ---------------------------------------------------------------------------
 # 1. Housing Price  (HM Land Registry Price Paid)
-# ---------------------------------------------------------------------------
-
 # The raw Price Paid files have NO header row, so the column names are supplied here.
 pp_cols <- c("Transaction_ID", "Price", "Date_of_Transfer", "Postcode",
              "Property_Type", "New_Build", "Freehold", "PAON",
              "SAON", "Street", "Locality", "Town",
              "District", "County", "Category_Type", "Record_Status")
 
-house_prices_2021 <- read_csv("data/pp-2021.csv", col_names = pp_cols, show_col_types = FALSE)
-house_prices_2022 <- read_csv("data/pp-2022.csv", col_names = pp_cols, show_col_types = FALSE)
-house_prices_2023 <- read_csv("data/pp-2023.csv", col_names = pp_cols, show_col_types = FALSE)
-house_prices_2024 <- read_csv("data/pp-2024.csv", col_names = pp_cols, show_col_types = FALSE)
-house_prices_2025 <- read_csv("data/pp-2025.csv", col_names = pp_cols, show_col_types = FALSE)
+house_prices_2021 <- read_csv("data/pp-2021.csv", col_names = pp_cols, 
+                              show_col_types = FALSE)
+house_prices_2022 <- read_csv("data/pp-2022.csv", col_names = pp_cols, 
+                              show_col_types = FALSE)
+house_prices_2023 <- read_csv("data/pp-2023.csv", col_names = pp_cols, 
+                              show_col_types = FALSE)
+house_prices_2024 <- read_csv("data/pp-2024.csv", col_names = pp_cols, 
+                              show_col_types = FALSE)
+house_prices_2025 <- read_csv("data/pp-2025.csv", col_names = pp_cols, 
+                              show_col_types = FALSE)
 
 merged_house_prices <- bind_rows(house_prices_2021,
                                  house_prices_2022,
@@ -68,7 +61,6 @@ merged_house_prices <- bind_rows(house_prices_2021,
                                  house_prices_2024,
                                  house_prices_2025)
 
-# Keep the two study counties, tidy the fields, and drop unusable rows.
 # Dates arrive as "2021-06-09 00:00", so only the first 10 characters are parsed.
 cleaned_house_prices <- merged_house_prices %>%
   filter(toupper(County) %in% c("NORFOLK", "SUFFOLK")) %>%
@@ -89,19 +81,19 @@ write.csv(cleaned_house_prices,
 cat("Housing   :", nrow(cleaned_house_prices), "sales |",
     n_distinct(cleaned_house_prices$District), "districts\n")
 
-
-# ---------------------------------------------------------------------------
 # 2. Broadband  (Ofcom fixed postcode performance)
-# ---------------------------------------------------------------------------
+
 
 broadband_data <- read_csv("data/201805_fixed_pc_performance_r03.csv",
                            show_col_types = FALSE)
 
-# Keep only the study-area postcodes, i.e. those that appear in the housing data.
+
 broadband_clean_data <- broadband_data %>%
   transmute(Postcode = std_pc(postcode_space),
-            `Average download speed (Mbit/s)` = as.numeric(`Average download speed (Mbit/s)`),
-            `Maximum download speed (Mbit/s)` = as.numeric(`Maximum download speed (Mbit/s)`)) %>%
+            `Average download speed (Mbit/s)` = as.numeric
+            (`Average download speed (Mbit/s)`),
+            `Maximum download speed (Mbit/s)` = as.numeric
+            (`Maximum download speed (Mbit/s)`)) %>%
   filter(!is.na(`Average download speed (Mbit/s)`)) %>%
   semi_join(cleaned_house_prices %>% distinct(Postcode), by = "Postcode")
 
@@ -112,9 +104,8 @@ write.csv(broadband_clean_data,
 cat("Broadband :", nrow(broadband_clean_data), "study-area postcodes\n")
 
 
-# ---------------------------------------------------------------------------
 # 3. Crime  (data.police.uk monthly street-level files)
-# ---------------------------------------------------------------------------
+
 
 crime_files <- list.files("data/crime",
                           pattern    = "\\.csv$",
@@ -123,15 +114,19 @@ crime_files <- list.files("data/crime",
 
 merged_crime <- map_dfr(crime_files, \(f) read_csv(f, show_col_types = FALSE))
 
-# Rows are selected on the LSOA name, not the police force. A force records some
-# crimes outside its own area, so filtering by force would pull in neighbouring
-# districts such as Fenland and East Cambridgeshire.
-districts <- c("Breckland", "Broadland", "Great Yarmouth", "King's Lynn and West Norfolk",
-               "North Norfolk", "Norwich", "South Norfolk",
-               "Babergh", "East Suffolk", "Ipswich", "Mid Suffolk", "West Suffolk",
-               "Forest Heath", "St Edmundsbury", "Suffolk Coastal", "Waveney")
 
-suffolk_districts <- c("Babergh", "East Suffolk", "Ipswich", "Mid Suffolk", "West Suffolk")
+# Each name must stay on ONE line: a string broken across two lines keeps the
+# newline and the indent inside it, and would then match no LSOA name at all.
+districts <- c("Breckland", "Broadland", "Great Yarmouth",
+               "King's Lynn and West Norfolk",
+               "North Norfolk", "Norwich", "South Norfolk",
+               "Babergh", "East Suffolk", "Ipswich", "Mid Suffolk",
+               "West Suffolk",
+               "Forest Heath", "St Edmundsbury", "Suffolk Coastal",
+               "Waveney")
+
+suffolk_districts <- c("Babergh", "East Suffolk", "Ipswich", "Mid Suffolk",
+                       "West Suffolk")
 
 crime_cleaned_data <- merged_crime %>%
   select(Month, `Crime type`, `LSOA code`, `LSOA name`) %>%
@@ -144,7 +139,8 @@ crime_cleaned_data <- merged_crime %>%
            District %in% c("Forest Heath", "St Edmundsbury")  ~ "West Suffolk",
            District %in% c("Suffolk Coastal", "Waveney")      ~ "East Suffolk",
            TRUE                                               ~ District)) %>%
-  mutate(County = if_else(District %in% suffolk_districts, "Suffolk", "Norfolk"))
+  mutate(County = if_else(District %in% suffolk_districts,
+                          "Suffolk", "Norfolk"))
 
 write.csv(crime_cleaned_data,
           "cleaned/crime_clean_data.csv",
@@ -154,9 +150,9 @@ cat("Crime     :", nrow(crime_cleaned_data), "kept of", nrow(merged_crime),
     "|", nrow(merged_crime) - nrow(crime_cleaned_data), "dropped\n")
 
 
-# ---------------------------------------------------------------------------
+
 # 4. Population  (2011 census, postcode-sector level)
-# ---------------------------------------------------------------------------
+
 
 # Population values are quoted and comma-separated, e.g. "12,345".
 population_clean <- read_csv("data/Population2011_1656567141570.csv",
@@ -172,9 +168,9 @@ write.csv(population_clean,
 cat("Population:", nrow(population_clean), "postcode sectors\n")
 
 
-# ---------------------------------------------------------------------------
+
 # 5. School  (KS4 Attainment 8)
-# ---------------------------------------------------------------------------
+
 
 ks4_files <- list.files("data/school",
                         pattern    = "ks4final\\.csv$",
@@ -186,8 +182,7 @@ info_files <- list.files("data/school",
                          recursive  = TRUE,
                          full.names = TRUE)
 
-# ATT8SCR holds "SUPP" (suppressed) and "NE" for some schools. These must become NA,
-# never 0, or the town averages would be dragged down by schools with no published score.
+
 read_ks4 <- function(f) {
   academic_year <- str_extract(f, "20\\d{2}-20\\d{2}")
 
@@ -205,10 +200,7 @@ school_info <- map_dfr(info_files, \(f)
       transmute(URN, Postcode = std_pc(POSTCODE))) %>%
   distinct(URN, .keep_all = TRUE)
 
-# A school's own postcode is rarely one that has had a house sale, so joining schools
-# to towns on the exact postcode matches only ~40% of them and silently drops 16 towns.
-# Matching on the postcode sector instead - the level the population data already works
-# at - takes each sector's dominant town and matches all 146 schools.
+
 sector_town <- cleaned_house_prices %>%
   mutate(Sector = pc_sector(Postcode)) %>%
   count(Sector, Town, County) %>%
@@ -232,10 +224,11 @@ cat("School    :", nrow(school_cleaned_data), "town-year rows |",
     n_distinct(school_cleaned_data$Town), "towns\n")
 
 
-# ---------------------------------------------------------------------------
-# 6. Normalised (3NF) SQLite database
-# ---------------------------------------------------------------------------
 
+# 6. Normalised (3NF) SQLite database
+
+
+library(DBI); library(RSQLite)
 con <- dbConnect(SQLite(), "outputs/property_analysis.sqlite")
 
 districts_tbl <- cleaned_house_prices %>%
@@ -252,6 +245,7 @@ towns_tbl <- cleaned_house_prices %>%
   slice_max(n, n = 1, with_ties = FALSE) %>%
   ungroup() %>%
   filter(total >= 300) %>%
+  #inner join applied here
   inner_join(districts_tbl, by = "District") %>%
   transmute(town_id = row_number(), Town, district_id)
 

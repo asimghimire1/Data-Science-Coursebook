@@ -1,32 +1,20 @@
 # ST5014CEM Data Science for Developers
 # Asim Ghimire (240330)
 #
-# Builds the town-level dataset and fits the six linear models.
-# Saves cleaned/town_data.csv and six scatter plots to graphs/.
-#
-# Run after Cleaning.R.
+
 
 library(tidyverse)
-
-
 setwd("C:/Users/asimg/Downloads/Data Science Codes Files")
 
-
-# ---------------------------------------------------------------------------
 # Colour palette
-# ---------------------------------------------------------------------------
 
-# The same two brand colours used in Graphs.R, so Norfolk is coral and Suffolk
-# is teal in every figure of the report.
 CORAL <- "#F97068"
 TEAL  <- "#00BFC9"
-
 county_colours <- c(Norfolk = CORAL, Suffolk = TEAL)
 
 
-# ---------------------------------------------------------------------------
 # Load the cleaned datasets
-# ---------------------------------------------------------------------------
+
 
 house_data      <- read_csv("cleaned/cleaned_house_prices.csv", show_col_types = FALSE)
 broadband_data  <- read_csv("cleaned/broadband_cleaned_data.csv", show_col_types = FALSE)
@@ -35,10 +23,8 @@ population_data <- read_csv("cleaned/cleaned_population_data.csv", show_col_type
 school_data     <- read_csv("cleaned/school_clean_data.csv", show_col_types = FALSE)
 
 
-# ---------------------------------------------------------------------------
-# Town-level dataset
-# ---------------------------------------------------------------------------
 
+# Town-level dataset
 # A town qualifies once it has at least 300 sales across 2021-2025, and is assigned
 # the county and district in which most of its sales occurred.
 town_tab <- house_data %>%
@@ -104,9 +90,8 @@ write.csv(town_data, "cleaned/town_data.csv", row.names = FALSE)
 cat("town_data:", nrow(town_data), "towns\n\n")
 
 
-# ---------------------------------------------------------------------------
-# Scatter plot helper
-# ---------------------------------------------------------------------------
+
+# For Scatter plot 
 
 scatter <- function(x, y, x_label, y_label, title) {
   ggplot(town_data, aes(.data[[x]], .data[[y]], colour = County)) +
@@ -118,9 +103,9 @@ scatter <- function(x, y, x_label, y_label, title) {
 }
 
 
-# ---------------------------------------------------------------------------
+
 # Model 1. Average house price ~ average download speed
-# ---------------------------------------------------------------------------
+
 
 house_broadband_model <- lm(average_house_price ~ avg_download_speed, data = town_data)
 summary(house_broadband_model)
